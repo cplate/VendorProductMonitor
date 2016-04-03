@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/packages
+/VendorProductMonitor/bin/Debug
+/VendorProductMonitor/obj/Debug
+/VendorProductMonitor.Tests/bin/Debug
+/VendorProductMonitor.Tests/obj/Debug
