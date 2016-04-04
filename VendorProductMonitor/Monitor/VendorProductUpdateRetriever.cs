@@ -1,6 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -26,15 +27,14 @@ namespace VendorProductMonitor.Monitor
             var queueMsgList = queueMsgs?.ToList();
             if (queueMsgList != null && queueMsgList.Any())
             {
+                // Required to delete messages after retrieving them, whether successfully processed or not
+                queueMsgList.ForEach(async qmsg => await _queue.DeleteMessageAsync(qmsg));
+                
                 var updates = new List<VendorProductUpdate>();
                 foreach (var queueMsg in queueMsgList)
-                {
+                {                    
                     var updateMsgObj = JsonConvert.DeserializeObject<VendorProductUpdateQueueMessage>(queueMsg.AsString);
                     updates.AddRange(updateMsgObj.Updates);
-
-                    // Could wait until successfully processing the message before deleting message, forcing caller to
-                    // call another method to delete the message.  Keeping simple to start
-                    await _queue.DeleteMessageAsync(queueMsg);
                 }
 
                 return updates;
